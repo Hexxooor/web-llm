@@ -1,0 +1,106 @@
+name: Daily Main Merge
+
+on:
+  schedule:
+    # Läuft täglich um 18:00 Uhr (UTC)
+    - cron: '0 18 * * *'
+  workflow_dispatch: # Ermöglicht manuelles Triggern
+
+jobs:
+  daily-merge:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Configure Git
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+          
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          
+      - name: Merge agent branches to main
+        run: |
+          git checkout main
+          
+          # Merge-Reihenfolge (wichtig!)
+          BRANCHES=(
+            "agent/data-cache"
+            "agent/ai-integration"
+            "agent/frontend"
+            "agent/styling"
+          )
+          
+          MERGE_REPORT="# Daily Merge Report\n\n"
+          MERGE_REPORT+="Date: $(date)\n\n"
+          
+          for branch in "${BRANCHES[@]}"; do
+            echo "Attempting to merge $branch..."
+            
+            if git merge origin/$branch --no-ff -m "Daily merge: $branch → main"; then
+              MERGE_REPORT+="✅ $branch → main: Success\n"
+            else
+              MERGE_REPORT+="❌ $branch → main: Conflict detected\n"
+              git merge --abort
+            fi
+          done
+          
+          # Push if any merges were successful
+          if git diff --quiet HEAD origin/main; then
+            echo "No changes to push"
+          else
+            git push origin main
+            MERGE_REPORT+="\n✅ Changes pushed to main\n"
+          fi
+          
+          # Save report
+          echo -e "$MERGE_REPORT" > merge-report.md
+          
+      - name: Back-merge to agent branches
+        run: |
+          # Update all agent branches with latest main
+          BRANCHES=(
+            "agent/frontend"
+            "agent/ai-integration"
+            "agent/data-cache"
+            "agent/styling"
+          )
+          
+          for branch in "${BRANCHES[@]}"; do
+            git checkout $branch
+            if git merge main -m "Back-merge: main → $branch"; then
+              git push origin $branch
+              echo "✅ Updated $branch with main"
+            else
+              echo "❌ Conflict updating $branch"
+              git merge --abort
+            fi
+          done
+          
+      - name: Create merge report issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('merge-report.md', 'utf8');
+            
+            const issue = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Daily Merge Report - ${new Date().toISOString().split('T')[0]}`,
+              body: report,
+              labels: ['merge-report', 'automated']
+            });
+            
+            console.log(`Created issue #${issue.data.number}`);
