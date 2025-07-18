@@ -1,0 +1,72 @@
+name: Auto-Merge to Integration
+
+on:
+  push:
+    branches: 
+      - 'agent/**'
+
+jobs:
+  auto-merge:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Configure Git
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+          
+      - name: Fetch all branches
+        run: git fetch --all
+          
+      - name: Merge to Integration
+        run: |
+          # Get the source branch name
+          SOURCE_BRANCH="${GITHUB_REF#refs/heads/}"
+          echo "Merging $SOURCE_BRANCH to integration"
+          
+          # Checkout integration branch
+          git checkout integration
+          
+          # Try to merge
+          if git merge origin/$SOURCE_BRANCH --no-ff -m "Auto-merge: $SOURCE_BRANCH → integration"; then
+            echo "Merge successful"
+            git push origin integration
+          else
+            echo "Merge conflict detected. Manual intervention required."
+            exit 1
+          fi
+          
+      - name: Comment on merge status
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const branch = context.ref.replace('refs/heads/', '');
+            const status = ${{ job.status == 'success' }} ? '✅' : '❌';
+            const message = ${{ job.status == 'success' }} 
+              ? `${status} Auto-merge successful: ${branch} → integration`
+              : `${status} Auto-merge failed: ${branch} → integration (conflicts detected)`;
+            
+            // Find related issue
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: branch.replace('agent/', 'agent-')
+            });
+            
+            if (issues.data.length > 0) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issues.data[0].number,
+                body: message
+              });
+            }
