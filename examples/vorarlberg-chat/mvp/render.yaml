@@ -1,0 +1,45 @@
+services:
+  - type: web
+    name: vorarlberg-chat
+    runtime: static
+    buildCommand: cd examples/vorarlberg-chat/mvp && npm install && npm run build
+    staticPublishPath: ./examples/vorarlberg-chat/mvp/dist
+    pullRequestPreviewsEnabled: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: VITE_APP_NAME
+        value: Vorarlberg Chat
+      - key: VITE_APP_VERSION
+        value: 1.0.0
+      - key: VITE_MODEL_NAME
+        value: Llama-3.2-1B-Instruct-q4f32_1-MLC
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: public, max-age=3600
+      - path: /assets/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+      - path: /*.js
+        name: Content-Type
+        value: application/javascript; charset=utf-8
+      - path: /*.css
+        name: Content-Type
+        value: text/css; charset=utf-8
+      - path: /*
+        name: X-Frame-Options
+        value: SAMEORIGIN
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+      - path: /*
+        name: Permissions-Policy
+        value: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
