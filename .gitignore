@@ -250,6 +250,14 @@ cmake-build-debug
 # Visual Studio Code
 .vscode
 
+# Claude Code Config - WICHTIG: Diese Dateien nicht committen!
+.claude-code/
+.claude-code/*
+.claude-code/config.json
+*.claude-code
+**/.claude-code/
+**/.claude-code/*
+
 # tmp file
 .nfs*
 
