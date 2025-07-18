@@ -11,6 +11,7 @@
 | Agent-5 | Backend & API (Supabase) | `agent/backend` | 🟡 Wartet | - |
 | Agent-6 | Features & Enhancement | `agent/features` | 🟡 Wartet | - |
 | Agent-7 | Testing & QA | `agent/testing` | 🟡 Wartet | - |
+| Agent-8 | Integration & Merge | `agent/integration` | 🟢 Aktiv | 18.07.2025 |
 
 ## 🎯 Aufgabenverteilung
 
@@ -105,6 +106,22 @@
 - [ ] E2E Tests mit Playwright
 - [ ] CI/CD Pipeline
 
+### Agent-8: Integration & Merge Agent ⭐
+**Branch:** `agent/integration`
+**Arbeitsbereich:**
+- Root-Level Dateien
+- Build-Konfiguration
+- Deployment-Setup
+
+**Aufgaben:**
+- [x] render.yaml erstellt
+- [x] package.json mit Dependencies
+- [x] vite.config.ts konfiguriert
+- [ ] tsconfig.json erstellen
+- [ ] Basis React App Setup
+- [ ] Daily Merges koordinieren
+- [ ] Build & Deploy Pipeline
+
 ## 🔧 Arbeitsregeln
 
 ### 1. Branch-Regeln
@@ -136,18 +153,17 @@ git push origin agent/[bereich]
 
 ### Daily Sync (täglich um 18:00)
 1. Alle Agents pushen ihre Änderungen
-2. Maintainer reviewed PRs
+2. Agent-8 reviewed und merged
 3. Merge in folgender Reihenfolge:
-   - Backend → Main (wenn DB-Schema fertig)
    - Data & Cache → Main
    - AI Integration → Main
-   - Frontend → Main
    - Styling → Main
+   - Frontend → Main
    - Features → Main
    - Testing → Main (läuft parallel)
 
 ### Konflikt-Resolution
-- Bei Merge-Konflikten: Maintainer entscheidet
+- Agent-8 löst Merge-Konflikte
 - Keine direkten Merges zwischen Agent-Branches
 - Immer über Main synchronisieren
 
@@ -165,26 +181,34 @@ git push origin agent/[bereich]
 ## 📊 Dependencies Graph
 
 ```
-Agent-5 (Backend) ──┐
-                    ├──→ Agent-1 (Frontend)
-Agent-3 (Data) ─────┘         │
-                              ↓
-Agent-2 (AI) ────────────→ Agent-6 (Features)
-                              ↑
-Agent-4 (Styling) ────────────┘
-
-Agent-7 (Testing) ←── Tests alle anderen Agents
+Agent-8 (Integration) ──┬──→ Koordiniert alle Agents
+                        │
+Agent-3 (Data) ─────────┼──→ Agent-1 (Frontend)
+                        │         │
+Agent-2 (AI) ───────────┼────────→ Agent-6 (Features)
+                        │         ↑
+Agent-4 (Styling) ──────┼─────────┘
+                        │
+Agent-7 (Testing) ←─────┴── Tests alle anderen Agents
 ```
 
 ---
 
 ## 📝 Status-Log
 
+### [2025-07-18] - Agent-8 Integration
+- **Erledigt:** 
+  - render.yaml für Deployment erstellt
+  - package.json mit allen Dependencies
+  - vite.config.ts konfiguriert
+  - Branch agent/integration erstellt
+- **In Arbeit:** tsconfig.json und Basis-Setup
+- **Nächste Schritte:** React App Grundstruktur
+
 ### [2025-07-18] - System Update
-- 3 neue Agents hinzugefügt (Backend, Features, Testing)
-- Branches erstellt für alle 7 Agents
-- Issues erstellt mit detaillierten Aufgaben
-- Erweiterte Architektur mit Supabase Backend
+- Agent-8 (Integration & Merge) hinzugefügt
+- Issue #8 erstellt mit hoher Priorität
+- Deployment-Ready Setup vorbereitet
 
 ### [Initialisierung] - System Setup
 - Multi-Agent-System eingerichtet
