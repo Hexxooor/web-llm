@@ -1,0 +1,76 @@
+# Agent Workspace Configuration
+# Diese Datei definiert, welche Bereiche jeder Agent bearbeiten darf
+
+agent-1:
+  name: "Frontend Agent"
+  branch: "agent/frontend"
+  allowed-paths:
+    - src/components/**
+    - src/pages/**
+    - src/hooks/**
+    - src/types/components.ts
+    - tests/components/**
+  restricted-paths:
+    - src/services/**
+    - src/styles/**
+    - src/data/**
+
+agent-2:
+  name: "AI Integration Agent"
+  branch: "agent/ai-integration"
+  allowed-paths:
+    - src/services/webllm/**
+    - src/services/intent/**
+    - src/config/ai/**
+    - src/types/ai.ts
+    - tests/ai/**
+  restricted-paths:
+    - src/components/**
+    - src/styles/**
+    - src/data/**
+
+agent-3:
+  name: "Data & Cache Agent"
+  branch: "agent/data-cache"
+  allowed-paths:
+    - src/services/cache/**
+    - src/data/**
+    - src/utils/storage/**
+    - src/types/data.ts
+    - tests/data/**
+  restricted-paths:
+    - src/components/**
+    - src/services/webllm/**
+    - src/styles/**
+
+agent-4:
+  name: "Styling Agent"
+  branch: "agent/styling"
+  allowed-paths:
+    - src/styles/**
+    - public/assets/**
+    - src/components/**/*.css
+    - src/components/**/*.module.css
+    - src/types/styles.ts
+  restricted-paths:
+    - src/services/**
+    - src/data/**
+    - src/hooks/**
+
+# Gemeinsame Dateien (alle Agents dürfen lesen, aber nicht schreiben)
+shared-read-only:
+  - package.json
+  - tsconfig.json
+  - vite.config.ts
+  - README.md
+  - AGENT-COORDINATION.md
+  - src/types/shared.ts
+
+# Nur Maintainer darf diese Dateien ändern
+maintainer-only:
+  - .gitignore
+  - .env
+  - .env.example
+  - render.yaml
+  - agent-workspace.yaml
+  - AGENT-COORDINATION.md
