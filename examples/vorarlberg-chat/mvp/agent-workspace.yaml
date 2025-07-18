@@ -57,6 +57,51 @@ agent-4:
     - src/data/**
     - src/hooks/**
 
+agent-5:
+  name: "Backend & API Agent"
+  branch: "agent/backend"
+  allowed-paths:
+    - src/lib/supabase/**
+    - src/services/api/**
+    - src/config/supabase.config.ts
+    - src/types/database.ts
+    - supabase/**
+    - tests/api/**
+  restricted-paths:
+    - src/components/**
+    - src/styles/**
+    - src/features/**
+
+agent-6:
+  name: "Features Agent"
+  branch: "agent/features"
+  allowed-paths:
+    - src/features/**
+    - src/utils/markdown/**
+    - src/utils/shortcuts/**
+    - src/utils/i18n/**
+    - public/manifest.json
+    - public/robots.txt
+    - public/icons/**
+    - tests/features/**
+  restricted-paths:
+    - src/services/api/**
+    - src/services/webllm/**
+    - src/lib/**
+
+agent-7:
+  name: "Testing & QA Agent"
+  branch: "agent/testing"
+  allowed-paths:
+    - tests/**
+    - .github/workflows/**
+    - playwright.config.ts
+    - jest.config.js
+    - .eslintrc.testing.js
+    - coverage/**
+  restricted-paths:
+    - src/** # kann nur Tests schreiben, nicht Source Code
+
 # Gemeinsame Dateien (alle Agents dürfen lesen, aber nicht schreiben)
 shared-read-only:
   - package.json
@@ -65,6 +110,7 @@ shared-read-only:
   - README.md
   - AGENT-COORDINATION.md
   - src/types/shared.ts
+  - .env.example
 
 # Nur Maintainer darf diese Dateien ändern
 maintainer-only:
@@ -74,3 +120,4 @@ maintainer-only:
   - render.yaml
   - agent-workspace.yaml
   - AGENT-COORDINATION.md
+  - package-lock.json
